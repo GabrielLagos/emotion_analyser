@@ -15,7 +15,7 @@ exports.play = function (state = henryIVLines) {
 };
 
 //where is user in the play
-exports.playPosition = (state = 0, action) => {
+exports.playPosition = (state = 1, action) => {
     let playPosition = state;
 
     switch (action.type) {

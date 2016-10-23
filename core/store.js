@@ -1,5 +1,6 @@
 
 import {createStore, combineReducers} from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
 import {play, playPosition} from '../assets/play-reducer'
 
 let reducers = combineReducers({
@@ -7,6 +8,6 @@ let reducers = combineReducers({
     playPosition,
 });
 
-const store = createStore(reducers);
+const store = createStore(reducers, composeWithDevTools());
 
 export default store;

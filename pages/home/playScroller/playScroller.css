@@ -1,4 +1,13 @@
 .wrapper {
+    -ms-flex-item-align: end;
     align-self: flex-end;
     width: 100%;
+    background: rgb(35, 35, 70);
+    padding-top: 11px;
+    margin: 0 5px 10px 5px;
+    border-radius: 10px;
+}
+
+.mdl-slider__background-upper {
+    background: rgba(209, 209, 209, 0.26);
 }

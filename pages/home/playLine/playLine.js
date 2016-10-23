@@ -2,11 +2,15 @@
  * Created by gooba on 23/10/2016.
  */
 import React, {PropTypes} from 'react';
+import {bindActionCreators} from 'redux'
+import {connect} from 'react-redux';
 import styles from './playLine.css';
-
+import classNames from 'classnames'
 export class PlayLine extends React.Component {
     static propTypes = {
-        position: PropTypes.number.isRequired,
+        position: PropTypes.oneOfType([
+            PropTypes.number,
+            PropTypes.string]).isRequired,
         lines : PropTypes.array.isRequired,
     };
 
@@ -14,18 +18,31 @@ export class PlayLine extends React.Component {
     }
 
     render() {
-
-        let currentLine = this.props.lines[this.props.position].text_entry;
+        let currentLine = '';
+        if (this.props.lines && this.props.position && this.props.lines[this.props.position]) {
+            currentLine = this.props.lines[this.props.position].text_entry;
+        }
 
         return (
             <div className={styles.wrapper}>
-                <p>
-                    <span className={styles.fancyWriting}>{currentLine}</span>
-                </p>
+                <div className={styles.writing}>
+                    {currentLine}
+                </div>
             </div>
         );
     }
 
 }
 
-export default PlayLine;
+const mapDispatchToProps = (dispatch, ownProps) => {
+    return bindActionCreators({}, dispatch);
+};
+
+function mapStateToProps(state) {
+    return {
+        position: state.playPosition,
+        lines: state.play
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PlayLine);

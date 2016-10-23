@@ -105,7 +105,7 @@ describe('<PlayLine/>', () => {
                 lines={lines}/>
         );
 
-        expect(scroller.find('span').text()).to.contain("So shaken as we are");
+        expect(scroller.find('div > div').text()).to.contain("So shaken as we are");
     });
 
     it('Render scroller', () => {

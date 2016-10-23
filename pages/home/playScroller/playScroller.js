@@ -2,7 +2,8 @@
  * Created by gooba on 23/10/2016.
  */
 import React, {PropTypes} from 'react';
-import { connect } from 'react-redux';
+import {bindActionCreators} from 'redux'
+import {connect} from 'react-redux';
 import styles from './playScroller.css';
 import {moveToPosition} from '../../../assets/play-reducer'
 
@@ -13,7 +14,9 @@ export class PlayScroller extends React.Component {
     }
 
     static propTypes = {
-        position: PropTypes.number.isRequired,
+        position: PropTypes.oneOfType([
+            PropTypes.number,
+            PropTypes.string]).isRequired,
         lines: PropTypes.array.isRequired,
         changePosition: PropTypes.func.isRequired,
     };
@@ -26,18 +29,23 @@ export class PlayScroller extends React.Component {
         window.componentHandler.downgradeElements(this.root);
     }
 
-    onChange(value) {
-        console.log(`\nvalue = ${value}`);
-        this.props.changePosition(value);
+    onChange(event) {
+        //check for target property. Unit test will only have a single value
+        if (event.target) {
+            let value = event.target.value;
+            this.props.changePosition(value);
+        } else {
+            this.props.changePosition(event);
+        }
     }
 
     render() {
         return (
             <div className={styles.wrapper}>
-                <p style={{width: '100%'}}>
+                <p style={{width: '100%', position: 'relative'}}>
                     <input ref={node => (this.root = node)}
                            className="mdl-slider mdl-js-slider" type="range" onChange={this.onChange}
-                           min="0" max={this.props.lines.length} tabIndex={this.props.position} value={this.props.lines.length}/>
+                           min="0" max={this.props.lines.length} value={this.props.position} tabIndex="0"/>
                 </p>
             </div>
         );
@@ -45,9 +53,9 @@ export class PlayScroller extends React.Component {
 
 }
 const mapDispatchToProps = (dispatch, ownProps) => {
-    return {
-        changePosition : moveToPosition
-    }
+    return bindActionCreators({
+        changePosition: moveToPosition
+    }, dispatch);
 };
 
 function mapStateToProps(state) {

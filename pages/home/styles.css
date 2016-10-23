@@ -20,7 +20,7 @@
     .topLine {
         display : flex;
         flex : 0.5;
-        flex-direction: row;
+        flex-direction: column;
         background-color: black;
         box-shadow: 0 -8px 19px 9px #57638f;
     }

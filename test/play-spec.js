@@ -12,8 +12,8 @@ describe('initial state', () => {
     it('playPosition defined', () => {
         state.should.have.property('playPosition');
     });
-    it('playPosition is 0', () => {
-        expect(state.playPosition).to.equal(0);
+    it('playPosition is 1', () => {
+        expect(state.playPosition).to.equal(1);
     });
 
 });
