@@ -8,10 +8,28 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 2160px) {
 
-  .content {
-    padding: 0 16px;
-  }
+    .content {
+        padding: 3px;
+        display : flex;
+        flex :1;
+        flex-direction: column;
+    }
 
+    .topLine {
+        display : flex;
+        flex : 0.5;
+        flex-direction: row;
+        background-color: black;
+        box-shadow: 0 -8px 19px 9px #57638f;
+    }
+
+    .analytics {
+        display : flex;
+        flex : 0.5;
+        flex-direction: row;
+        background-color: white;
+        box-shadow: 1px 8px 19px 9px #57638f;
+    }
 }
