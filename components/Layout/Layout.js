@@ -8,39 +8,60 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React, { PropTypes } from 'react';
+import React, {PropTypes} from 'react';
 import cx from 'classnames';
 import Header from './Header';
 import Footer from '../Footer';
-import s from './Layout.css';
+import styles from './Layout.css';
+import {bindActionCreators} from 'redux'
+import {connect} from 'react-redux';
+import Notifications, {notify} from 'react-notify-toast';
 
-class Layout extends React.Component {
+export class Layout extends React.Component {
 
-  static propTypes = {
-    className: PropTypes.string,
-  };
+    static propTypes = {
+        className: PropTypes.string,
+    };
 
-  componentDidMount() {
+    componentDidMount() {
 //    window.componentHandler.upgradeElement(this.root);
-  }
+    }
 
-  componentWillUnmount() {
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.restStatus && nextProps.restStatus.length > 0) {
+            notify.show(nextProps.restStatus);
+        }
+    }
+
+    componentWillUnmount() {
 //    window.componentHandler.downgradeElements(this.root);
-  }
+    }
 
-  render() {
-    return (
-      <div className="mdl-layout mdl-js-layout" ref={node => (this.root = node)}>
-        <div className={cx("mdl-layout__inner-container", s["mdl-layout__inner-container"])}>
-          <Header />
-          <main className={cx("mdl-layout__content", s["mdl-layout__content"])}>
-            <div {...this.props} className={cx(s.content, this.props.className)} />
-            <Footer />
-          </main>
-        </div>
-      </div>
-    );
-  }
+    render() {
+        return (
+            <div className="mdl-layout mdl-js-layout" ref={node => (this.root = node)}>
+                <Notifications/>
+                <div className={cx("mdl-layout__inner-container", styles["mdl-layout__inner-container"])}>
+                    <Header />
+                    <main className={cx("mdl-layout__content", styles["mdl-layout__content"])}>
+                        <div {...this.props} className={cx(styles.content, this.props.className)}/>
+                        <Footer />
+                    </main>
+                </div>
+            </div>
+        );
+    }
 }
 
-export default Layout;
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+    return bindActionCreators({}, dispatch);
+};
+
+function mapStateToProps(state) {
+    return {
+        restStatus: state.restStatus,
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Layout);

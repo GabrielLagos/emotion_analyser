@@ -1,11 +1,13 @@
 import React, {PropTypes} from 'react';
+import {bindActionCreators} from 'redux'
+import {connect} from 'react-redux';
 import Layout from '../../components/Layout';
-import s from './styles.css';
+import styles from './styles.css';
 import PlayScroller from './playScroller/playScroller'
 import PlayLine from './playLine/playLine'
-import {PieChart} from './pieChart/pieChart'
+import PieChart from './pieChart/pieChart'
 
-class HomePage extends React.Component {
+export class HomePage extends React.Component {
 
     componentDidMount() {
 //        document.title = title;
@@ -14,8 +16,8 @@ class HomePage extends React.Component {
     componentWillUnmount() {
     }
 
-
     render() {
+/*
         let data = {
             "anger": "0.325268",
             "disgust": "0.368537",
@@ -23,14 +25,16 @@ class HomePage extends React.Component {
             "joy": "0.402121",
             "sadness": "0.160611"
         };
+*/
         return (
-            <Layout className={s.content}>
-                <div className={s.topLine}>
+            <Layout className={styles.content}>
+                <div className={styles.topLine}>
                     <PlayLine/>
                     <PlayScroller/>
                 </div>
-                <div className={s.analytics}>
-                    <PieChart title="Emotion Analysis" data={data} types={[['string', 'emotion'], ['number', 'scale']]} />
+                <div className={styles.analytics}>
+                    {/*<PieChart title="Emotion Analysis" data={data} types={[['string', 'emotion'], ['number', 'scale']]} />*/}
+                    <PieChart title="Emotion Analysis" types={[['string', 'emotion'], ['number', 'scale']]}/>
                 </div>
             </Layout>
         );
@@ -38,4 +42,12 @@ class HomePage extends React.Component {
 
 }
 
-export default HomePage;
+const mapDispatchToProps = (dispatch, ownProps) => {
+    return bindActionCreators({}, dispatch);
+};
+
+function mapStateToProps(state) {
+    return {}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomePage);
