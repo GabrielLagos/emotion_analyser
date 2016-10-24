@@ -1,8 +1,8 @@
 /**
  * Created by gooba on 24/10/2016.
  */
-import { takeEvery, takeLatest} from 'redux-saga'
-import { call, put } from 'redux-saga/effects'
+import {takeEvery, takeLatest} from 'redux-saga'
+import {call, put} from 'redux-saga/effects'
 import {getEmotionAnalysis} from '../pages/services/alchemyApi'
 
 ///CONSTANTS
@@ -20,6 +20,28 @@ let DEFAULT_EMOTION = {
     "sadness": 0.0
 };
 
+// the initial seed
+Math.seed = 6;
+
+// in order to work 'Math.seed' must NOT be undefined,
+// so in any case, you HAVE to provide a Math.seed
+Math.seededRandom = function (min=0, max=1) {
+    Math.seed = (Math.seed * 9301 + 49297) % 233280;
+    var rnd = Math.seed / 233280;
+
+    return min + rnd * (max - min);
+}
+
+let randomEmotions = (position) => {
+    Math.seed = position;
+    return {
+        "anger": Math.seededRandom(0, 1),
+        "disgust": Math.seededRandom(0, 1),
+        "fear": Math.seededRandom(0, 1),
+        "joy": Math.seededRandom(0, 1),
+        "sadness": Math.seededRandom(0, 1),
+    };
+};
 //emotion analysis for current line
 exports.currentEmotion = (state = DEFAULT_EMOTION, action) => {
 
@@ -34,8 +56,10 @@ exports.currentEmotion = (state = DEFAULT_EMOTION, action) => {
 
         //reset back to initial state
         case RESET_EMOTION:
-        case ANALYSE_EMOTION_ERROR:
             return DEFAULT_EMOTION;
+
+        case ANALYSE_EMOTION_ERROR:
+            return randomEmotions(action.payload.position);
 
         default:
             return state;
@@ -49,7 +73,7 @@ exports.restStatus = (state = '', action) => {
 
     switch (action.type) {
         case ANALYSE_EMOTION_ERROR:
-            return action.payload;
+            return `Error fetching from Alchemy API: ${action.payload.message}`;
 
         case ANALYSE_EMOTION:
         default:
@@ -57,13 +81,16 @@ exports.restStatus = (state = '', action) => {
     }
 };
 
-function* analyseEmotionAsync (action) {
+function* analyseEmotionAsync(action) {
     try {
-        const analysis = yield call(getEmotionAnalysis, action.payload);
+        const analysis = yield call(getEmotionAnalysis, action.payload.text);
         if (analysis.status == null || analysis.status == "ERROR") {
             yield put({
                 type: ANALYSE_EMOTION_ERROR,
-                payload: analysis.statusInfo
+                payload: {
+                    message: analysis.statusInfo,
+                    position: action.payload.position
+                }
             });
         } else {
             yield put({
@@ -72,7 +99,7 @@ function* analyseEmotionAsync (action) {
             });
         }
     }
-    catch(e) {
+    catch (e) {
         console.error(e);
         yield put({
             type: RESET_EMOTION
@@ -90,9 +117,9 @@ exports.resetEmotion = () => {
     };
 };
 
-exports.fetchEmotionAnalysis = (text) => {
+exports.fetchEmotionAnalysis = (text, position) => {
     return {
         type: FETCH_NEW_EMOTION,
-        payload: text
+        payload: {text, position}
     };
 };

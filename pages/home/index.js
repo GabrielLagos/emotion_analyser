@@ -6,6 +6,7 @@ import styles from './styles.css';
 import PlayScroller from './playScroller/playScroller'
 import PlayLine from './playLine/playLine'
 import PieChart from './pieChart/pieChart'
+import LineChart from './lineChart/lineChart'
 
 export class HomePage extends React.Component {
 
@@ -34,6 +35,7 @@ export class HomePage extends React.Component {
                 </div>
                 <div className={styles.analytics}>
                     {/*<PieChart title="Emotion Analysis" data={data} types={[['string', 'emotion'], ['number', 'scale']]} />*/}
+                    <LineChart/>
                     <PieChart title="Emotion Analysis" types={[['string', 'emotion'], ['number', 'scale']]}/>
                 </div>
             </Layout>

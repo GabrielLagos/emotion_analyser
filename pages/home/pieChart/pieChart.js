@@ -72,13 +72,13 @@ export class PieChart extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.initState(nextProps);
+        /*this.initState(nextProps);*/
 
         if (this.lastPosition != nextProps.position) {
             this.lastPosition = nextProps.position;
             try {
                 let text = nextProps.lines[nextProps.position].text_entry;
-                this.props.fetchEmotionAnalysis(text);
+                this.props.fetchEmotionAnalysis(text, nextProps.position);
             }
             catch (e) {
                 console.error(e);
@@ -93,7 +93,7 @@ export class PieChart extends React.Component {
             );
         }
         const {columns, rows} = this.parseData();
-        console.log(`row data = ${JSON.stringify(rows, null, 4)}`);
+
         // try {
         return (
             <div className={styles.wrapper}>
@@ -109,8 +109,8 @@ export class PieChart extends React.Component {
                             is3D: true
                         }}
                         graph_id="Emotion Chart"
-                        width="450px"
-                        height="450px"
+                        width="250px"
+                        height="250px"
                         legend_toggle
                     />
                 </div>
