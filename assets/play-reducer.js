@@ -10,7 +10,7 @@ const RESET_POSITION = 'RESET_POSITION';
 //read play in at start up and make it available to the store.
 //this is a readonly store (no actions)
 const henryIVLines = require('./play.json');
-exports.play = function (state = henryIVLines) {
+exports.play = (state = henryIVLines) => {
     return state;
 };
 
