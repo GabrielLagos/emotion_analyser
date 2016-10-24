@@ -10,7 +10,7 @@ import {PlayScroller} from '../pages/home/playScroller/playScroller'
 
 chai.should();
 
-describe('<PlayLine/>', () => {
+describe('<PlayScroller/>', () => {
     it('Render correct line', () => {
         const lines = [
             {

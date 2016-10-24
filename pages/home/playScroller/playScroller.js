@@ -9,14 +9,21 @@ import {moveToPosition} from '../../../assets/play-reducer'
 import MdPlay from 'react-icons/lib/md/play-circle-filled';
 import MdPause from 'react-icons/lib/md/pause-circle-outline'
 
+/**
+ * PlayScroller is responsible for displaying the scroll bar and play/pause buttons.
+ * IT also moves the thumb automatically if the position from the state is modified.
+ */
 export class PlayScroller extends React.Component {
     constructor(props) {
         super(props);
+
+        //bind all methods to the this operator
         this.onChange = this.onChange.bind(this);
         this.play = this.play.bind(this);
         this.pause = this.pause.bind(this);
         this.incrementPosition = this.incrementPosition.bind(this);
 
+        //in paused mode to begin with
         this.state = {
             playing: false
         }
@@ -38,6 +45,7 @@ export class PlayScroller extends React.Component {
         window.componentHandler.downgradeElements(this.root);
     }
 
+    //if the scroll bar is moved then update the position in the state
     onChange(event) {
         //check for target property. Unit test will only have a single value
         if (event.target) {
@@ -48,19 +56,28 @@ export class PlayScroller extends React.Component {
         }
     }
 
-    pause() {
-        this.setState({playing: false});
-        clearInterval(this.cancelTimer);
-    }
-
+    /**
+     * This method is called by the interval timer. It advance the play position 1 by 1 until the end of the play
+     */
     incrementPosition() {
         let position = parseInt(this.props.position);
         this.props.changePosition(position + 1)
     }
 
+    /**
+     * this kicks of the interval timer
+     */
     play() {
         this.setState({playing: true});
         this.cancelTimer = setInterval(this.incrementPosition, 2000);
+    }
+
+    /**
+     * stops playback of the play
+     */
+    pause() {
+        this.setState({playing: false});
+        clearInterval(this.cancelTimer);
     }
 
     render() {
@@ -80,6 +97,8 @@ export class PlayScroller extends React.Component {
     }
 
 }
+
+//REDUX STUFF BELOW
 const mapDispatchToProps = (dispatch, ownProps) => {
     return bindActionCreators({
         changePosition: moveToPosition

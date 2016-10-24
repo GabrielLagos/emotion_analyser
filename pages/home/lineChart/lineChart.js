@@ -9,7 +9,13 @@ import styles from './lineChart.css';
 import {Chart} from 'react-google-charts'
 import {fetchEmotionAnalysis} from '../../../reducers/emotion-reducer'
 
+/**
+ * See home/index.js for context on how this component is used.
+ * The LineChart uses the react-google-charts component to draw the
+ * line chart and displays all 5 emotions of the current line from the play.
+ */
 export class LineChart extends React.Component {
+    //define the types used in this component
     static propTypes = {
         data: PropTypes.object.isRequired,
         position: PropTypes.oneOfType([
@@ -20,68 +26,63 @@ export class LineChart extends React.Component {
 
     constructor(props) {
         super(props);
+
+        //intialise the component state to initial values
         this.state = {
             min: 0.0,
             max: 1.0,
             series: [
                 ["line", "anger", "disgust", "fear", "joy", "sadness"],
                 [0.0, 0, 0, 0, 0, 0]
-            ],
-            columns: ["line", "anger", "disgust", "fear", "joy", "sadness"]
+            ]
         };
     }
 
+    /**
+     * transform the data into a format that google charts can handle.
+     * @param nextProps
+     * @returns {Array.<*>|*}
+     */
     parseData(nextProps) {
-
-        let columns, rows;
-        if (nextProps.types) {
-            columns = Object.keys(nextProps.data).sort().map((key) => {
-                return {
-                    "type": "number",
-                    "label": key
-                }
-            })
-        }
-
+        let rows;
         if (nextProps.data) {
             rows = Object.keys(nextProps.data).sort().map(key => {
                 return parseFloat(nextProps.data[key]);
             });
         }
 
+        //need to add the position as the first element so the chart knows where to drop this plot,
         rows = [nextProps.position].concat(rows);
-        return {columns, rows};
+        return rows;
     }
 
-    componentDidMount() {
-    }
-
+    /**
+     * New props are coming into the component
+     * @param nextProps
+     */
     componentWillReceiveProps(nextProps) {
-        const {columns, rows} = this.parseData(nextProps);
+        //transform rows and add it to the series already in the chart.
+        const rows = this.parseData(nextProps);
         let series = this.state.series;
         series.push(rows);
+        //the following will cause render to be called
         this.setState({
-            columns: columns,
             series: series,
         });
         setTimeout(() => {
+            //in 300ms move the window of the chart up to surround the current position.
             this.setState({
-                min : parseInt(nextProps.position)-1,
-                max : parseInt(nextProps.position)+1,
+                min: parseInt(nextProps.position) - 1,
+                max: parseInt(nextProps.position) + 1,
             });
         }, 300)
     }
 
+    /**
+     * Render function does all the drawing.
+     * @returns {XML}
+     */
     render() {
-        /*
-         if (this.state.columns == null || this.state.series == null) {
-         return (
-         <h1>Can't render data.</h1>
-         );
-         }
-         console.log(`row data = ${JSON.stringify(rows, null, 4)}`);
-         */
-        // try {
         return (
             <div className={styles.wrapper}>
                 <div className={styles.chartWrapper}>
@@ -112,17 +113,19 @@ export class LineChart extends React.Component {
                 </div>
             </div>
         );
-        /*
-         }
-         catch (e) {
-         console.error(e);
-         return null;
-         }
-         */
     }
 }
 
+//Everything under here is redux connection stuff.
+//Note that the redux connected component is exported by default.
+// The "dumb" component is exported above and can be used for testing.
 
+/**
+ * attach the fetchEmotionalAnalysis to the props of the component
+ * @param dispatch
+ * @param ownProps
+ * @returns {*}
+ */
 const mapDispatchToProps = (dispatch, ownProps) => {
     return bindActionCreators({
         fetchEmotionAnalysis
@@ -134,10 +137,6 @@ function mapStateToProps(state) {
         data: state.currentEmotion,
         position: state.playPosition,
         lines: state.play
-        /*
-         types: state.types,
-         title: state.title
-         */
     }
 }
 

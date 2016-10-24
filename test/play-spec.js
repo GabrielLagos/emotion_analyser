@@ -4,6 +4,9 @@ chai.should();
 import store from '../core/store'
 import {moveToPosition, resetPosition} from '../assets/play-reducer'
 
+/**
+ * Test the state at app startup
+ */
 describe('initial state', () => {
     let state = store.getState();
     it('play should have 3205 lines loaded on startup', () => {
@@ -18,6 +21,9 @@ describe('initial state', () => {
 
 });
 
+/**
+ * Try playing with action creators to see if the store is changed properly
+ */
 describe('actions', () => {
     var state = store.getState();
     let {playPosition} = state;

@@ -8,11 +8,17 @@ import styles from './playLine.css';
 import classNames from 'classnames'
 import {Motion, spring} from 'react-motion';
 
+/**
+ * PlayLine is responsible for showing the current line and information.
+ */
 export class PlayLine extends React.Component {
     constructor(props) {
         super(props);
+        //init state to initial values
         this.state = {
+            //is text leaving the screen
             leaving: false,
+            //is the next text entering the screen
             entering: false,
             currentLine: '',
         }
@@ -25,12 +31,19 @@ export class PlayLine extends React.Component {
         lines: PropTypes.array.isRequired,
     };
 
+    /**
+     * add the current text to the state
+     */
     componentDidMount() {
         let text = this.props.lines[this.props.position].text_entry;
+        //setting state causes a render to occur
         this.setState({currentLine: text});
     }
 
-
+    /**
+     * when a new line comes in, the following code animates the opacity
+     * @param nextProps
+     */
     componentWillReceiveProps(nextProps) {
         let nextText = nextProps.lines[nextProps.position].text_entry;
         if (this.state.currentLine != nextText) {
@@ -74,6 +87,7 @@ export class PlayLine extends React.Component {
 
 }
 
+//REDUX STUFF BELOW HERE
 const mapDispatchToProps = (dispatch, ownProps) => {
     return bindActionCreators({}, dispatch);
 };

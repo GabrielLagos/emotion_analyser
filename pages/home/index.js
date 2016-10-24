@@ -10,23 +10,7 @@ import LineChart from './lineChart/lineChart'
 
 export class HomePage extends React.Component {
 
-    componentDidMount() {
-//        document.title = title;
-    }
-
-    componentWillUnmount() {
-    }
-
     render() {
-/*
-        let data = {
-            "anger": "0.325268",
-            "disgust": "0.368537",
-            "fear": "0.142631",
-            "joy": "0.402121",
-            "sadness": "0.160611"
-        };
-*/
         return (
             <Layout className={styles.content}>
                 <div className={styles.topLine}>
@@ -34,14 +18,12 @@ export class HomePage extends React.Component {
                     <PlayScroller/>
                 </div>
                 <div className={styles.analytics}>
-                    {/*<PieChart title="Emotion Analysis" data={data} types={[['string', 'emotion'], ['number', 'scale']]} />*/}
                     <LineChart/>
                     <PieChart title="Emotion Analysis" types={[['string', 'emotion'], ['number', 'scale']]}/>
                 </div>
             </Layout>
         );
     }
-
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {

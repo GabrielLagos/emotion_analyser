@@ -9,6 +9,11 @@ import styles from './pieChart.css';
 import {Chart} from 'react-google-charts'
 import {fetchEmotionAnalysis} from '../../../reducers/emotion-reducer'
 
+/**
+ * See home/index.js for context on how this component is used.
+ * The PieChart uses the react-google-charts component to draw the
+ * pie chart and displays all 5 emotions of the current line from the play.
+ */
 export class PieChart extends React.Component {
     static propTypes = {
         data: PropTypes.object.isRequired,
@@ -72,8 +77,7 @@ export class PieChart extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        /*this.initState(nextProps);*/
-
+        //call the Alchemy API if the position was changed.
         if (this.lastPosition != nextProps.position) {
             this.lastPosition = nextProps.position;
             try {
@@ -94,7 +98,6 @@ export class PieChart extends React.Component {
         }
         const {columns, rows} = this.parseData();
 
-        // try {
         return (
             <div className={styles.wrapper}>
                 <div className={styles.chartWrapper}>
@@ -116,16 +119,10 @@ export class PieChart extends React.Component {
                 </div>
             </div>
         );
-        /*
-         }
-         catch (e) {
-         console.error(e);
-         return null;
-         }
-         */
     }
 }
 
+//REDUX Stuff below
 
 const mapDispatchToProps = (dispatch, ownProps) => {
     return bindActionCreators({

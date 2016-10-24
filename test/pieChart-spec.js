@@ -9,7 +9,7 @@ import {PieChart} from '../pages/home/pieChart/pieChart'
 chai.should();
 
 
-describe('<PieChart/>',  () => {
+describe('<PieChart/>', () => {
     let data = {
         "anger": "0.325268",
         "disgust": "0.368537",
@@ -17,9 +17,27 @@ describe('<PieChart/>',  () => {
         "joy": "0.402121",
         "sadness": "0.160611"
     };
+
+    const lines = [
+        {
+            "line_id": 1,
+            "play_name": "Henry IV",
+            "speech_number": "",
+            "line_number": "",
+            "speaker": "",
+            "text_entry": "ACT I"
+        }, {
+            "line_id": 2,
+            "play_name": "Henry IV",
+            "speech_number": "",
+            "line_number": "",
+            "speaker": "",
+            "text_entry": "SCENE I. London. The palace."
+        }];
+
     it('should format data properly', () => {
         const chart = shallow(
-            <PieChart data={data} types={[['string', 'emotion'], ['number', 'scale']]} title="Emotional Analysis" />
+            <PieChart data={data} types={[['string', 'emotion'], ['number', 'scale']]} title="Emotional Analysis" lines={lines}/>
         );
 
         expect(chart.state().columns).to.have.length(2);
@@ -27,11 +45,3 @@ describe('<PieChart/>',  () => {
     });
 });
 
-/*
-* "docEmotions": {
- "anger": "0.325268",
- "disgust": "0.368537",
- "fear": "0.142631",
- "joy": "0.402121",
- "sadness": "0.160611"
- }*/
