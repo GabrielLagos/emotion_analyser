@@ -99,13 +99,13 @@ describe('<PlayScroller/>', () => {
                 "text_entry": "Of hostile paces: those opposed eyes,"
             }
         ];
-        const scroller = shallow(
+        const line = shallow(
             <PlayLine
                 position={3}
                 lines={lines}/>
         );
 
-        expect(scroller.find('div > div').text()).to.contain("So shaken as we are");
+        expect(line.find('h3').text()).to.contain("KING HENRY IV");
     });
 
     it('Render scroller', () => {
@@ -197,9 +197,11 @@ describe('<PlayScroller/>', () => {
             }
         ];
         const onChanged = sinon.spy();
+        const fetchEmotionAnalysis = sinon.spy();
         const scroller = shallow(
             <PlayScroller
                 position={3}
+                fetchEmotionAnalysis={fetchEmotionAnalysis}
                 lines={lines} changePosition={(onChanged)}/>
         );
 
@@ -207,6 +209,7 @@ describe('<PlayScroller/>', () => {
         slider.simulate('change', 1);
 
         expect(onChanged).to.have.property('callCount', 1);
+        expect(fetchEmotionAnalysis).to.have.property('callCount', 1);
     });
 
 });

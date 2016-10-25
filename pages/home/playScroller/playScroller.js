@@ -58,7 +58,7 @@ export class PlayScroller extends React.Component {
             value = event;
             this.props.changePosition(value);
         }
-        this.analyseEmotion(position);
+        this.analyseEmotion(value);
     }
 
     /**
