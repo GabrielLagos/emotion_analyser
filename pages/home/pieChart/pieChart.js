@@ -7,7 +7,6 @@ import {connect} from 'react-redux';
 import {render} from 'react-dom'
 import styles from './pieChart.css';
 import {Chart} from 'react-google-charts'
-import {fetchEmotionAnalysis} from '../../../reducers/emotion-reducer'
 
 /**
  * See home/index.js for context on how this component is used.
@@ -44,7 +43,7 @@ export class PieChart extends React.Component {
 
         if (this.props.data) {
             rows = Object.keys(this.props.data).map(key => {
-                return [key, parseFloat(this.props.data[key]) * 100.0];
+                return [key, parseFloat(this.props.data[key])];
             });
         }
 
@@ -76,20 +75,6 @@ export class PieChart extends React.Component {
         this.initState(this.props);
     }
 
-    componentWillReceiveProps(nextProps) {
-        //call the Alchemy API if the position was changed.
-        if (this.lastPosition != nextProps.position) {
-            this.lastPosition = nextProps.position;
-            try {
-                let text = nextProps.lines[nextProps.position].text_entry;
-                this.props.fetchEmotionAnalysis(text, nextProps.position);
-            }
-            catch (e) {
-                console.error(e);
-            }
-        }
-    }
-
     render() {
         if (this.state.columns == null || this.state.rows == null || this.props.title == null) {
             return (
@@ -112,7 +97,7 @@ export class PieChart extends React.Component {
                             is3D: true
                         }}
                         graph_id="Emotion Chart"
-                        width="250px"
+                        width="350px"
                         height="250px"
                         legend_toggle
                     />
@@ -125,9 +110,7 @@ export class PieChart extends React.Component {
 //REDUX Stuff below
 
 const mapDispatchToProps = (dispatch, ownProps) => {
-    return bindActionCreators({
-        fetchEmotionAnalysis
-    }, dispatch);
+    return bindActionCreators({}, dispatch);
 };
 
 function mapStateToProps(state) {
@@ -135,10 +118,6 @@ function mapStateToProps(state) {
         data: state.currentEmotion,
         position: state.playPosition,
         lines: state.play
-        /*
-         types: state.types,
-         title: state.title
-         */
     }
 }
 

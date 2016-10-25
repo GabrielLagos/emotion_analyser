@@ -6,6 +6,7 @@ import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux';
 import styles from './playScroller.css';
 import {moveToPosition} from '../../../assets/play-reducer'
+import {fetchEmotionAnalysis} from '../../../reducers/emotion-reducer'
 import MdPlay from 'react-icons/lib/md/play-circle-filled';
 import MdPause from 'react-icons/lib/md/pause-circle-outline'
 
@@ -22,6 +23,7 @@ export class PlayScroller extends React.Component {
         this.play = this.play.bind(this);
         this.pause = this.pause.bind(this);
         this.incrementPosition = this.incrementPosition.bind(this);
+        this.analyseEmotion = this.analyseEmotion.bind(this);
 
         //in paused mode to begin with
         this.state = {
@@ -47,13 +49,16 @@ export class PlayScroller extends React.Component {
 
     //if the scroll bar is moved then update the position in the state
     onChange(event) {
+        let value;
         //check for target property. Unit test will only have a single value
         if (event.target) {
-            let value = event.target.value;
+            value = event.target.value;
             this.props.changePosition(value);
         } else {
-            this.props.changePosition(event);
+            value = event;
+            this.props.changePosition(value);
         }
+        this.analyseEmotion(position);
     }
 
     /**
@@ -61,15 +66,21 @@ export class PlayScroller extends React.Component {
      */
     incrementPosition() {
         let position = parseInt(this.props.position);
-        this.props.changePosition(position + 1)
+        this.props.changePosition(position + 1);
+        this.analyseEmotion(position+1);
     }
 
+    analyseEmotion(position) {
+        let text = this.props.lines[position].text_entry;
+        this.props.fetchEmotionAnalysis(text, position);
+    }
     /**
      * this kicks of the interval timer
      */
     play() {
         this.setState({playing: true});
-        this.cancelTimer = setInterval(this.incrementPosition, 2000);
+        this.cancelTimer = setInterval(this.incrementPosition, 3000);
+        this.incrementPosition();
     }
 
     /**
@@ -101,6 +112,7 @@ export class PlayScroller extends React.Component {
 //REDUX STUFF BELOW
 const mapDispatchToProps = (dispatch, ownProps) => {
     return bindActionCreators({
+        fetchEmotionAnalysis: fetchEmotionAnalysis,
         changePosition: moveToPosition
     }, dispatch);
 };

@@ -7,7 +7,6 @@ import {connect} from 'react-redux';
 import {render} from 'react-dom'
 import styles from './lineChart.css';
 import {Chart} from 'react-google-charts'
-import {fetchEmotionAnalysis} from '../../../reducers/emotion-reducer'
 
 /**
  * See home/index.js for context on how this component is used.
@@ -28,6 +27,7 @@ export class LineChart extends React.Component {
         super(props);
 
         //intialise the component state to initial values
+        //min-max are the left, right constraints around the current position.
         this.state = {
             min: 0.0,
             max: 1.0,
@@ -64,7 +64,22 @@ export class LineChart extends React.Component {
         //transform rows and add it to the series already in the chart.
         const rows = this.parseData(nextProps);
         let series = this.state.series;
-        series.push(rows);
+        if (nextProps.position == this.lastPosition) {
+            //replace existing entry in the series with the new one
+            let index = series.findIndex((element) => element[0] == nextProps.position);
+            if (index>=0) {
+                //replace existing element with new one
+                series.splice(index,1, rows);
+            } else {
+                //couldnt find entry. This should never be the cae
+                //but just in case, we'll add it.
+                series.push(rows);
+            }
+        } else {
+            series.push(rows);
+        }
+
+        this.lastPosition = nextProps.position;
         //the following will cause render to be called
         this.setState({
             series: series,
@@ -103,7 +118,8 @@ export class LineChart extends React.Component {
                                 duration: 600,
                                 easing: 'linear'
                             },
-                            curveType: 'none', //'none', // or 'function'
+                            pointSize : 4,
+                            curveType: 'function', //'none', // or 'function'
                         }}
                         graph_id="Emotion Line Chart"
                         width="650px"
@@ -127,9 +143,7 @@ export class LineChart extends React.Component {
  * @returns {*}
  */
 const mapDispatchToProps = (dispatch, ownProps) => {
-    return bindActionCreators({
-        fetchEmotionAnalysis
-    }, dispatch);
+    return bindActionCreators({}, dispatch);
 };
 
 function mapStateToProps(state) {

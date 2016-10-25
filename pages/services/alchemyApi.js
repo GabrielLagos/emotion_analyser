@@ -4,13 +4,16 @@
 
 //Some constants
 const API_KEY = "9541481794480afe68df1285e67824421ae9cdcb";
-const BASE_URI = `http://gateway-a.watsonplatform.net/calls/text/`;
+const BASE_URI = `https://gateway-a.watsonplatform.net/calls/text/`;
 const EMOTION_PATH = `TextGetEmotion?apikey=${API_KEY}&outputMode=json&showSourceText=1&text=`;
 
 /**
  * Simple helper function to call the Alchemy API
  * Note that it uses the fabled async/await rather then promises that
  * are far more common. It makes the code far more readable.
+ *
+ * Note that I'm seeing tons of "daily-limit-exceeded" errors. This was
+ * after only 4 or 5 requests and sporadically after that.
  *
  * @param text
  * @returns {*}
@@ -22,7 +25,7 @@ exports.getEmotionAnalysis = async function (text) {
     try {
         let response = await fetch(url);
         let json = await response.json();
-        console.log(`json response from alchemy = ${JSON.stringify(json, null, 4)}`);
+        // console.log(`json response from alchemy = ${JSON.stringify(json, null, 4)}`);
         return json;
     }
     catch(e) {

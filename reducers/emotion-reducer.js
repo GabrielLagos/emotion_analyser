@@ -5,6 +5,9 @@ import {takeLatest} from 'redux-saga'
 import {call, put} from 'redux-saga/effects'
 import {getEmotionAnalysis} from '../pages/services/alchemyApi'
 
+//cheap cache. Don't hit the server if we already have the emotion
+let emotionCache = [];
+
 ///CONSTANTS
 const ANALYSE_EMOTION = 'ANALYSE_EMOTION';
 const RESET_EMOTION = 'RESET_EMOTION';
@@ -20,38 +23,6 @@ let DEFAULT_EMOTION = {
     "sadness": 0.0
 };
 
-// the initial seed
-Math.seed = 6;
-
-//I nabbed this of stackoverflow to have a controlled stream of random numbers.
-//Unfortunately it didnt work too well and the chart wasnt playing nice for
-// some reason.
-//
-// in order to work 'Math.seed' must NOT be undefined,
-// so in any case, you HAVE to provide a Math.seed
-Math.seededRandom = function (min=0, max=1) {
-    Math.seed = (Math.seed * 9301 + 49297) % 233280;
-    var rnd = Math.seed / 233280;
-
-    return min + rnd * (max - min);
-};
-
-/**
- * This is used in the event of an error coming back from Alchemy which happened with alarming regularity.
- * @param position
- * @returns {{anger, disgust, fear, joy, sadness}}
- */
-let randomEmotions = (position) => {
-    Math.seed = position;
-    return {
-        "anger": Math.seededRandom(0, 1),
-        "disgust": Math.seededRandom(0, 1),
-        "fear": Math.seededRandom(0, 1),
-        "joy": Math.seededRandom(0, 1),
-        "sadness": Math.seededRandom(0, 1),
-    };
-};
-
 //emotion analysis for current line
 exports.currentEmotion = (state = DEFAULT_EMOTION, action) => {
 
@@ -65,12 +36,9 @@ exports.currentEmotion = (state = DEFAULT_EMOTION, action) => {
             return action.payload;
 
         //reset back to initial state
+        case ANALYSE_EMOTION_ERROR:
         case RESET_EMOTION:
             return DEFAULT_EMOTION;
-
-        //when an error action is detected, we use the randomEmotions generator above
-        case ANALYSE_EMOTION_ERROR:
-            return randomEmotions(action.payload.position);
 
         default:
             return state;
@@ -106,9 +74,19 @@ exports.restStatus = (state = '', action) => {
  * @param action
  */
 function* analyseEmotionAsync(action) {
+
+    //check if we already have this emotion. If so return it
+    if (emotionCache[action.payload.position]) {
+        yield put({
+            type: ANALYSE_EMOTION,
+            payload: emotionCache[action.payload.position]
+        });
+        return;
+    }
     try {
         const analysis = yield call(getEmotionAnalysis, action.payload.text);
         if (analysis.status == null || analysis.status == "ERROR") {
+            //bad news.
             yield put({
                 type: ANALYSE_EMOTION_ERROR,
                 payload: {
@@ -117,6 +95,8 @@ function* analyseEmotionAsync(action) {
                 }
             });
         } else {
+            //success - store it in the cache
+            emotionCache[action.payload.position] = analysis.docEmotions;
             yield put({
                 type: ANALYSE_EMOTION,
                 payload: analysis.docEmotions
@@ -135,7 +115,7 @@ function* analyseEmotionAsync(action) {
  * this function is used by Saga to monitor the actions flowing through Redux.
  * If it sees the FETCH_NEW_EMOTION, then the appropriate function is called.
  * Note that takeLatest cancels any queued actions with the same id. This helps
- * us to spare the erver from slamming it with too many hits.
+ * us to spare the server from slamming it with too many hits.
  */
 export function* emotionSaga() {
     yield* takeLatest(FETCH_NEW_EMOTION, analyseEmotionAsync);
